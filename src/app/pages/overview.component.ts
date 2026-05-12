@@ -530,6 +530,7 @@ export class OverviewComponent {
         'Very flexible and customizable'
       ],
       cons: [
+        'Requires Java (JVM) to run — not Node.js',
         'Can generate verbose code',
         'Steep learning curve for customization'
       ]
@@ -552,6 +553,7 @@ export class OverviewComponent {
         'Good for .NET + Angular stacks'
       ],
       cons: [
+        'Requires .NET runtime — not Node.js',
         'Generates more verbose code',
         'Primarily focused on .NET ecosystem'
       ]

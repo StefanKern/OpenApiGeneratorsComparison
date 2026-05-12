@@ -11,7 +11,8 @@
     "generate:orval": "orval --config orval.config.js",
     "generate:openapi-generator": "openapi-generator-cli generate -i openapi/pets.json -g typescript-angular -o src/generated/openapi-generator",
     "generate:nswag": "nswag openapi2tsclient /input:openapi/pets.json /output:src/generated/nswag/pets-client.ts /template:Angular",
-    "generate:all": "npm run generate:ng-openapi-gen && npm run generate:orval && npm run generate:openapi-generator"
+    "generate:hey-api": "openapi-ts --input openapi/pets.json --output src/generated/hey-api --client @hey-api/client-angular",
+    "generate:all": "npm run generate:ng-openapi-gen && npm run generate:orval && npm run generate:openapi-generator && npm run generate:nswag && npm run generate:hey-api"
   },
   "prettier": {
     "printWidth": 100,

@@ -80,6 +80,7 @@ import { CommonModule } from '@angular/common';
           <div class="cons">
             <h3>Cons</h3>
             <ul>
+              <li>Requires Java (JVM) to run — not Node.js</li>
               <li>Can generate verbose code</li>
               <li>Steep learning curve for customization</li>
               <li>Generated code may need cleanup</li>

@@ -80,6 +80,7 @@ import { CommonModule } from '@angular/common';
           <div class="cons">
             <h3>Cons</h3>
             <ul>
+              <li>Requires .NET runtime — not Node.js</li>
               <li>Generates more verbose code</li>
               <li>Classes instead of interfaces (heavier)</li>
               <li>Complex generated code structure</li>
