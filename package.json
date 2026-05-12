@@ -40,6 +40,7 @@
     "@angular/build": "^20.3.9",
     "@angular/cli": "^20.3.9",
     "@angular/compiler-cli": "^20.3.0",
+    "@hey-api/openapi-ts": "^0.97.1",
     "@openapitools/openapi-generator-cli": "^2.25.0",
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.9.0",

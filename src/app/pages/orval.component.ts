@@ -9,6 +9,11 @@ import { CommonModule } from '@angular/common';
       <div class="header">
         <h1>Orval</h1>
         <p class="subtitle">REST client generator for TypeScript with a focus on developer experience</p>
+        <div class="meta-info">
+          <span class="meta-badge">🗓 First released: Jan 11, 2020</span>
+          <a class="meta-badge" href="https://www.npmjs.com/package/orval" target="_blank" rel="noopener noreferrer">📦 Latest: v8.10.0</a>
+          <a class="meta-badge" href="https://orval.dev" target="_blank" rel="noopener noreferrer">🏠 Homepage</a>
+        </div>
       </div>
 
       <div class="content">
@@ -139,6 +144,32 @@ import { CommonModule } from '@angular/common';
       color: #666;
     }
 
+    .meta-info {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .meta-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      background: #f5f5f5;
+      color: #333;
+      text-decoration: none;
+      border: 1px solid #e0e0e0;
+      transition: background 0.2s;
+    }
+
+    a.meta-badge:hover {
+      background: #e0e0e0;
+    }
+
     .content section {
       margin-bottom: 2.5rem;
     }
@@ -251,40 +282,68 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class OrvalComponent {
-  serviceExample = '@Injectable({ providedIn: \'root\' })\n' +
-    'export class PetsService {\n' +
-    '  private http = inject(HttpClient);\n' +
-    '\n' +
-    '  listPets(params?: ListPetsParams): Observable<Pet[]> {\n' +
-    '    return this.http.get<Pet[]>(\n' +
-    '      `https://api.petstore.example.com/v1/pets`,\n' +
-    '      { params: params as any }\n' +
-    '    );\n' +
-    '  }\n' +
-    '\n' +
-    '  createPet(newPet: NewPet): Observable<Pet> {\n' +
-    '    return this.http.post<Pet>(\n' +
-    '      `https://api.petstore.example.com/v1/pets`,\n' +
-    '      newPet\n' +
-    '    );\n' +
-    '  }\n' +
-    '}';
+  serviceExample = `@Injectable({ providedIn: 'root' })
+export class PetStoreAPIService {
+  private readonly http = inject(HttpClient);
 
-  modelExample = 'export type PetSpecies = typeof PetSpecies[keyof typeof PetSpecies];\n' +
-    '\n' +
-    'export const PetSpecies = {\n' +
-    '  dog: \'dog\',\n' +
-    '  cat: \'cat\',\n' +
-    '  bird: \'bird\',\n' +
-    '  fish: \'fish\',\n' +
-    '  other: \'other\',\n' +
-    '} as const;\n' +
-    '\n' +
-    'export interface Pet {\n' +
-    '  id: string;\n' +
-    '  name: string;\n' +
-    '  tag?: string;\n' +
-    '  age?: number;\n' +
-    '  species?: PetSpecies;\n' +
-    '}';
+  /** @summary List all pets */
+  listPets<TData = Pet[]>(params?: ListPetsParams, options?: HttpClientOptions & { observe?: 'body' }): Observable<TData>;
+  listPets<TData = Pet[]>(params?: ListPetsParams, options?: HttpClientOptions & { observe: 'response' }): Observable<AngularHttpResponse<TData>>;
+  listPets<TData = Pet[]>(params?: ListPetsParams, options?: HttpClientOptions & { observe?: any }): Observable<any> {
+    return this.http.get<TData>(\`/pets\`, { ...options, params: { ...params, ...options?.params } });
+  }
+
+  /** @summary Create a pet */
+  createPet<TData = Pet>(newPet: NewPet, options?: HttpClientOptions & { observe?: 'body' }): Observable<TData>;
+  createPet<TData = Pet>(newPet: NewPet, options?: HttpClientOptions & { observe: 'response' }): Observable<AngularHttpResponse<TData>>;
+  createPet<TData = Pet>(newPet: NewPet, options?: HttpClientOptions & { observe?: any }): Observable<any> {
+    return this.http.post<TData>(\`/pets\`, newPet, options);
+  }
+
+  /** @summary Info for a specific pet */
+  getPetById<TData = Pet>(petId: string, options?: HttpClientOptions & { observe?: 'body' }): Observable<TData>;
+  getPetById<TData = Pet>(petId: string, options?: HttpClientOptions & { observe: 'response' }): Observable<AngularHttpResponse<TData>>;
+  getPetById<TData = Pet>(petId: string, options?: HttpClientOptions & { observe?: any }): Observable<any> {
+    return this.http.get<TData>(\`/pets/\${petId}\`, options);
+  }
+
+  /** @summary Delete a pet */
+  deletePet<TData = void>(petId: string, options?: HttpClientOptions & { observe?: 'body' }): Observable<TData>;
+  deletePet<TData = void>(petId: string, options?: HttpClientOptions & { observe: 'response' }): Observable<AngularHttpResponse<TData>>;
+  deletePet<TData = void>(petId: string, options?: HttpClientOptions & { observe?: any }): Observable<any> {
+    return this.http.delete<TData>(\`/pets/\${petId}\`, options);
+  }
+}`;
+
+  modelExample = `export type PetSpecies = typeof PetSpecies[keyof typeof PetSpecies];
+
+export const PetSpecies = {
+  dog: 'dog',
+  cat: 'cat',
+  bird: 'bird',
+  fish: 'fish',
+  other: 'other',
+} as const;
+
+export interface Pet {
+  id: string;
+  name: string;
+  tag?: string;
+  age?: number;
+  species?: PetSpecies;
+}
+
+export interface NewPet {
+  name: string;
+  tag?: string;
+  age?: number;
+  species?: PetSpecies;
+}
+
+export type Pets = Pet[];
+
+export type ListPetsParams = {
+  /** How many items to return at one time (max 100) */
+  limit?: number;
+}`;
 }

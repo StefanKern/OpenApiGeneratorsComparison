@@ -38,7 +38,7 @@ interface Generator {
       <section class="intro-section">
         <h2>About This Comparison</h2>
         <p>
-          This project compares four popular OpenAPI code generators for Angular/TypeScript projects.
+          This project compares five popular OpenAPI code generators for Angular/TypeScript projects.
           All examples are generated from the same <code>pets.json</code> OpenAPI specification file,
           which defines a simple Pet Store API with CRUD operations.
         </p>
@@ -108,6 +108,7 @@ interface Generator {
                 <td>✅ Yes</td>
                 <td>⚠️ Multi-framework</td>
                 <td>⚠️ .NET focused</td>
+                <td>✅ Yes (plugin)</td>
               </tr>
               <tr>
                 <td><strong>Code Style</strong></td>
@@ -115,6 +116,7 @@ interface Generator {
                 <td>Interfaces & Types</td>
                 <td>Interfaces & Namespaces</td>
                 <td>Classes</td>
+                <td>Interfaces & Types</td>
               </tr>
               <tr>
                 <td><strong>OpenAPI Support</strong></td>
@@ -122,6 +124,7 @@ interface Generator {
                 <td>2.0, 3.0</td>
                 <td>2.0, 3.0</td>
                 <td>2.0, 3.0</td>
+                <td>2.0, 3.0, 3.1</td>
               </tr>
               <tr>
                 <td><strong>Learning Curve</strong></td>
@@ -129,6 +132,7 @@ interface Generator {
                 <td>Medium</td>
                 <td>Medium-High</td>
                 <td>Medium</td>
+                <td>Low-Medium</td>
               </tr>
               <tr>
                 <td><strong>Bundle Size</strong></td>
@@ -136,12 +140,14 @@ interface Generator {
                 <td>Small</td>
                 <td>Medium</td>
                 <td>Large</td>
+                <td>Small</td>
               </tr>
               <tr>
                 <td><strong>Customization</strong></td>
                 <td>Limited</td>
                 <td>Extensive</td>
                 <td>Very Extensive</td>
+                <td>Good</td>
                 <td>Good</td>
               </tr>
             </tbody>
@@ -171,6 +177,11 @@ interface Generator {
             <h3>🔒 Type Safety</h3>
             <p><strong>NSwag</strong></p>
             <p>Strong typing with classes, excellent for .NET stacks.</p>
+          </div>
+          <div class="rec-card">
+            <h3>✨ Modern TypeScript</h3>
+            <p><strong>Hey API</strong></p>
+            <p>Clean, tree-shakable output with full OpenAPI 3.1 support.</p>
           </div>
         </div>
       </section>
@@ -543,6 +554,28 @@ export class OverviewComponent {
       cons: [
         'Generates more verbose code',
         'Primarily focused on .NET ecosystem'
+      ]
+    },
+    {
+      name: 'Hey API',
+      description: 'TypeScript-first OpenAPI client generator with Angular support via @hey-api/client-angular',
+      route: 'hey-api',
+      color: '#f59e0b',
+      npm: '@hey-api/openapi-ts',
+      stars: {
+        easeOfUse: 4,
+        angularIntegration: 4,
+        codeQuality: 5,
+        customization: 4
+      },
+      pros: [
+        'Clean, tree-shakable TypeScript output',
+        'Angular-native HttpClient and DI',
+        'Supports OpenAPI 2.0, 3.0, and 3.1'
+      ],
+      cons: [
+        'Newer tool with smaller community',
+        'Angular client is a separate package'
       ]
     }
   ];

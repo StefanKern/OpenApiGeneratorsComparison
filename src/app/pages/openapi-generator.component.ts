@@ -9,6 +9,11 @@ import { CommonModule } from '@angular/common';
       <div class="header">
         <h1>OpenAPI Generator</h1>
         <p class="subtitle">Industry-standard code generator supporting 50+ languages and frameworks</p>
+        <div class="meta-info">
+          <span class="meta-badge">🗓 First released: Nov 25, 2018</span>
+          <a class="meta-badge" href="https://www.npmjs.com/package/@openapitools/openapi-generator-cli" target="_blank" rel="noopener noreferrer">📦 Latest: v2.32.0</a>
+          <a class="meta-badge" href="https://github.com/OpenAPITools/openapi-generator-cli" target="_blank" rel="noopener noreferrer">🏠 Homepage</a>
+        </div>
       </div>
 
       <div class="content">
@@ -132,6 +137,32 @@ import { CommonModule } from '@angular/common';
       color: #666;
     }
 
+    .meta-info {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .meta-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      background: #f5f5f5;
+      color: #333;
+      text-decoration: none;
+      border: 1px solid #e0e0e0;
+      transition: background 0.2s;
+    }
+
+    a.meta-badge:hover {
+      background: #e0e0e0;
+    }
+
     .content section {
       margin-bottom: 2.5rem;
     }
@@ -244,45 +275,81 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class OpenApiGeneratorComponent {
-  serviceExample = '@Injectable({ providedIn: \'root\' })\n' +
-    'export class PetsService {\n' +
-    '  protected basePath = \'https://api.petstore.example.com/v1\';\n' +
-    '  public defaultHeaders = new HttpHeaders();\n' +
-    '\n' +
-    '  constructor(protected httpClient: HttpClient) {}\n' +
-    '\n' +
-    '  public listPets(limit?: number, observe: any = \'body\', \n' +
-    '                  reportProgress: boolean = false): Observable<any> {\n' +
-    '    let localVarQueryParameters = new HttpParams();\n' +
-    '    if (limit !== undefined && limit !== null) {\n' +
-    '      localVarQueryParameters = localVarQueryParameters.set(\n' +
-    '        \'limit\', <any>limit\n' +
-    '      );\n' +
-    '    }\n' +
-    '\n' +
-    '    return this.httpClient.get<Array<Pet>>(\n' +
-    '      `${this.basePath}/pets`,\n' +
-    '      { params: localVarQueryParameters, observe, reportProgress }\n' +
-    '    );\n' +
-    '  }\n' +
-    '}';
+  serviceExample = `@Injectable({ providedIn: 'root' })
+export class PetsService extends BaseService {
+  constructor(
+    protected httpClient: HttpClient,
+    @Optional() @Inject(BASE_PATH) basePath: string | string[],
+    @Optional() configuration?: Configuration
+  ) { super(basePath, configuration); }
 
-  modelExample = 'export interface Pet {\n' +
-    '  id: string;\n' +
-    '  name: string;\n' +
-    '  tag?: string;\n' +
-    '  age?: number;\n' +
-    '  species?: Pet.SpeciesEnum;\n' +
-    '}\n' +
-    '\n' +
-    'export namespace Pet {\n' +
-    '  export const SpeciesEnum = {\n' +
-    '    Dog: \'dog\',\n' +
-    '    Cat: \'cat\',\n' +
-    '    Bird: \'bird\',\n' +
-    '    Fish: \'fish\',\n' +
-    '    Other: \'other\'\n' +
-    '  } as const;\n' +
-    '  export type SpeciesEnum = typeof SpeciesEnum[keyof typeof SpeciesEnum];\n' +
-    '}';
+  // Three overloads let callers choose what the Observable emits
+  public listPets(limit?: number, observe?: 'body', reportProgress?: boolean): Observable<Pet[]>;
+  public listPets(limit?: number, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Pet[]>>;
+  public listPets(limit?: number, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Pet[]>>;
+  public listPets(limit?: number, observe: any = 'body', reportProgress = false): Observable<any> {
+    let params = new HttpParams();
+    if (limit !== undefined) params = params.set('limit', limit);
+    return this.httpClient.request<Pet[]>('get',
+      \`\${this.configuration.basePath}/pets\`,
+      { params, observe, reportProgress });
+  }
+
+  public createPet(newPet: NewPet, observe?: 'body', reportProgress?: boolean): Observable<Pet>;
+  public createPet(newPet: NewPet, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Pet>>;
+  public createPet(newPet: NewPet, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Pet>>;
+  public createPet(newPet: NewPet, observe: any = 'body', reportProgress = false): Observable<any> {
+    return this.httpClient.request<Pet>('post',
+      \`\${this.configuration.basePath}/pets\`,
+      { body: newPet, observe, reportProgress });
+  }
+
+  public getPetById(petId: string, observe?: 'body', reportProgress?: boolean): Observable<Pet>;
+  public getPetById(petId: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<Pet>>;
+  public getPetById(petId: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<Pet>>;
+  public getPetById(petId: string, observe: any = 'body', reportProgress = false): Observable<any> {
+    const id = this.configuration.encodeParam({ name: 'petId', value: petId,
+      in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined });
+    return this.httpClient.request<Pet>('get',
+      \`\${this.configuration.basePath}/pets/\${id}\`,
+      { observe, reportProgress });
+  }
+
+  public deletePet(petId: string, observe?: 'body', reportProgress?: boolean): Observable<any>;
+  public deletePet(petId: string, observe?: 'response', reportProgress?: boolean): Observable<HttpResponse<any>>;
+  public deletePet(petId: string, observe?: 'events', reportProgress?: boolean): Observable<HttpEvent<any>>;
+  public deletePet(petId: string, observe: any = 'body', reportProgress = false): Observable<any> {
+    const id = this.configuration.encodeParam({ name: 'petId', value: petId,
+      in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined });
+    return this.httpClient.request<any>('delete',
+      \`\${this.configuration.basePath}/pets/\${id}\`,
+      { observe, reportProgress });
+  }
+}`;
+
+  modelExample = `export interface Pet {
+  id: string;
+  name: string;
+  tag?: string;
+  age?: number;
+  species?: Pet.SpeciesEnum;
+}
+
+export namespace Pet {
+  export const SpeciesEnum = {
+    Dog: 'dog',
+    Cat: 'cat',
+    Bird: 'bird',
+    Fish: 'fish',
+    Other: 'other'
+  } as const;
+  export type SpeciesEnum = typeof SpeciesEnum[keyof typeof SpeciesEnum];
+}
+
+export interface NewPet {
+  name: string;
+  tag?: string;
+  age?: number;
+  species?: Pet.SpeciesEnum;
+}`;
 }

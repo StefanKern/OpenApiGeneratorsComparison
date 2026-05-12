@@ -9,6 +9,11 @@ import { CommonModule } from '@angular/common';
       <div class="header">
         <h1>ng-openapi-gen</h1>
         <p class="subtitle">OpenAPI client generator specifically designed for Angular</p>
+        <div class="meta-info">
+          <span class="meta-badge">🗓 First released: Feb 5, 2019</span>
+          <a class="meta-badge" href="https://www.npmjs.com/package/ng-openapi-gen" target="_blank" rel="noopener noreferrer">📦 Latest: v1.0.5</a>
+          <a class="meta-badge" href="https://github.com/cyclosproject/ng-openapi-gen" target="_blank" rel="noopener noreferrer">🏠 Homepage</a>
+        </div>
       </div>
 
       <div class="content">
@@ -47,11 +52,11 @@ import { CommonModule } from '@angular/common';
         <section class="code-section">
           <h2>Generated Code Example</h2>
           <div class="code-sample">
-            <h3>Service</h3>
+            <h3>Functions (fn/pets/*.ts)</h3>
             <pre><code>{{ serviceExample }}</code></pre>
           </div>
           <div class="code-sample">
-            <h3>Model</h3>
+            <h3>Models</h3>
             <pre><code>{{ modelExample }}</code></pre>
           </div>
         </section>
@@ -124,6 +129,32 @@ import { CommonModule } from '@angular/common';
     .subtitle {
       font-size: 1.2rem;
       color: #666;
+    }
+
+    .meta-info {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .meta-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      background: #f5f5f5;
+      color: #333;
+      text-decoration: none;
+      border: 1px solid #e0e0e0;
+      transition: background 0.2s;
+    }
+
+    a.meta-badge:hover {
+      background: #e0e0e0;
     }
 
     .content section {
@@ -238,35 +269,82 @@ import { CommonModule } from '@angular/common';
   `]
 })
 export class NgOpenApiGenComponent {
-  serviceExample = `// Function-based approach
-import { HttpClient } from '@angular/common/http';
-import { listPets } from './fn/pets/list-pets';
-import { ListPets$Params } from './fn/pets/list-pets';
+  serviceExample = `// fn/pets/list-pets.ts
+export interface ListPets$Params { limit?: number; }
+export function listPets(
+  http: HttpClient, rootUrl: string,
+  params?: ListPets$Params, context?: HttpContext
+): Observable<StrictHttpResponse<Pet[]>> {
+  const rb = new RequestBuilder(rootUrl, '/pets', 'get');
+  if (params) rb.query('limit', params.limit, {});
+  return http.request(rb.build({ responseType: 'json', accept: 'application/json', context }))
+    .pipe(
+      filter((r): r is HttpResponse<any> => r instanceof HttpResponse),
+      map(r => r as StrictHttpResponse<Pet[]>)
+    );
+}
+listPets.PATH = '/pets';
 
-export function getPets(
-  http: HttpClient, 
-  rootUrl: string, 
-  params?: ListPets$Params
-): Observable<StrictHttpResponse<Pets>> {
-  const rb = new RequestBuilder(rootUrl, listPets.PATH, 'get');
-  if (params) {
-    rb.query('limit', params.limit, {});
-  }
-  return http.request(rb.build({ 
-    responseType: 'json', 
-    accept: 'application/json' 
-  })).pipe(
-    filter((r: any): r is HttpResponse<any> => 
-      r instanceof HttpResponse),
-    map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Pets>;
-    })
-  );
-}`;
+// fn/pets/create-pet.ts
+export interface CreatePet$Params { body: NewPet }
+export function createPet(
+  http: HttpClient, rootUrl: string,
+  params: CreatePet$Params, context?: HttpContext
+): Observable<StrictHttpResponse<Pet>> {
+  const rb = new RequestBuilder(rootUrl, '/pets', 'post');
+  rb.body(params.body, 'application/json');
+  return http.request(rb.build({ responseType: 'json', accept: 'application/json', context }))
+    .pipe(
+      filter((r): r is HttpResponse<any> => r instanceof HttpResponse),
+      map(r => r as StrictHttpResponse<Pet>)
+    );
+}
+createPet.PATH = '/pets';
 
-  modelExample = `export interface Pet {
+// fn/pets/get-pet-by-id.ts
+export interface GetPetById$Params { petId: string }
+export function getPetById(
+  http: HttpClient, rootUrl: string,
+  params: GetPetById$Params, context?: HttpContext
+): Observable<StrictHttpResponse<Pet>> {
+  const rb = new RequestBuilder(rootUrl, '/pets/{petId}', 'get');
+  rb.path('petId', params.petId, {});
+  return http.request(rb.build({ responseType: 'json', accept: 'application/json', context }))
+    .pipe(
+      filter((r): r is HttpResponse<any> => r instanceof HttpResponse),
+      map(r => r as StrictHttpResponse<Pet>)
+    );
+}
+getPetById.PATH = '/pets/{petId}';
+
+// fn/pets/delete-pet.ts
+export interface DeletePet$Params { petId: string }
+export function deletePet(
+  http: HttpClient, rootUrl: string,
+  params: DeletePet$Params, context?: HttpContext
+): Observable<StrictHttpResponse<void>> {
+  const rb = new RequestBuilder(rootUrl, '/pets/{petId}', 'delete');
+  rb.path('petId', params.petId, {});
+  return http.request(rb.build({ responseType: 'text', accept: '*/*', context }))
+    .pipe(
+      filter((r): r is HttpResponse<any> => r instanceof HttpResponse),
+      map(r => (r as HttpResponse<any>).clone({ body: undefined }) as StrictHttpResponse<void>)
+    );
+}
+deletePet.PATH = '/pets/{petId}';`;
+
+  modelExample = `// models/pet.ts
+export interface Pet {
   age?: number;
   id: string;
+  name: string;
+  species?: 'dog' | 'cat' | 'bird' | 'fish' | 'other';
+  tag?: string;
+}
+
+// models/new-pet.ts
+export interface NewPet {
+  age?: number;
   name: string;
   species?: 'dog' | 'cat' | 'bird' | 'fish' | 'other';
   tag?: string;
